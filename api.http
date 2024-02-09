@@ -1,0 +1,30 @@
+
+GET http://localhost:3000/api/todos
+
+###
+
+GET http://localhost:3000/api/todos/1
+
+###
+
+POST http://localhost:3000/api/todos
+Content-Type: application/json
+
+{
+  "title": "Add blog post",
+  "complete": false
+}
+
+###
+
+PUT http://localhost:3000/api/todos/1
+Content-Type: application/json
+
+{
+  "title": "Add blog post",
+  "complete": true
+}
+
+###
+
+DELETE http://localhost:3000/api/todos/1

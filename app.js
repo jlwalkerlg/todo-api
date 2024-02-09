@@ -4,27 +4,72 @@ const app = express();
 const port = 3000;
 const baseUrl = `http://localhost:${port}`;
 
+let nextId = 2;
+let todos = [
+  {
+    id: 1,
+    title: "Add blog post",
+    complete: false,
+  },
+];
+
+app.use(express.json());
+
 app.get("/api/todos", (req, res) => {
-  res.json({ message: "Get all todos" });
+  res.json({ todos });
 });
 
 app.get("/api/todos/:id", (req, res) => {
-  res.json({ message: "Get a todo by id" });
+  const id = parseInt(req.params.id);
+  const todo = todos.find((todo) => todo.id === id);
+
+  if (!todo) {
+    res.status(404).end();
+    return;
+  }
+
+  res.json({ todo });
 });
 
 app.post("/api/todos", (req, res) => {
-  const id = 1;
+  const todo = {
+    id: nextId++,
+    title: req.body.title,
+    complete: req.body.complete,
+  };
 
-  res.status(201).location(`${baseUrl}/api/todos/${id}`);
-  res.json({ message: "Add a todo" });
+  todos.push(todo);
+
+  res.status(201).location(`${baseUrl}/api/todos/${todo.id}`).end();
 });
 
 app.put("/api/todos/:id", (req, res) => {
-  res.status(204).json({ message: "Update a todo by id" });
+  const id = parseInt(req.params.id);
+  const todo = todos.find((todo) => todo.id === id);
+
+  if (!todo) {
+    res.status(404).end();
+    return;
+  }
+
+  todo.title = req.body.title;
+  todo.complete = req.body.complete;
+
+  res.status(204).end();
 });
 
 app.delete("/api/todos/:id", (req, res) => {
-  res.status(204).json({ message: "Delete a todo by id" });
+  const id = parseInt(req.params.id);
+  const todo = todos.find((todo) => todo.id === id);
+
+  if (!todo) {
+    res.status(404).end();
+    return;
+  }
+
+  todos = todos.filter((t) => t !== todo);
+
+  res.status(204).end();
 });
 
 app.listen(port, () => {
