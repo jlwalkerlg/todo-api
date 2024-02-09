@@ -1,3 +1,0 @@
-- Validation
-- Only allow requests with Accept: application/json
-- Only allow requests with Content-Type: application/json

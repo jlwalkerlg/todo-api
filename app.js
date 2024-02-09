@@ -1,9 +1,5 @@
 import express from "express";
 
-const app = express();
-const port = 3000;
-const baseUrl = `http://localhost:${port}`;
-
 let nextId = 2;
 let todos = [
   {
@@ -12,6 +8,10 @@ let todos = [
     complete: false,
   },
 ];
+
+const app = express();
+const port = 3000;
+const baseUrl = `http://localhost:${port}`;
 
 app.use(express.json());
 
@@ -38,6 +38,13 @@ app.post("/api/todos", (req, res) => {
     complete: req.body.complete,
   };
 
+  const [valid, errors] = validateTodo(todo);
+
+  if (!valid) {
+    res.status(400).json({ message: "The request was not valid", errors });
+    return;
+  }
+
   todos.push(todo);
 
   res.status(201).location(`${baseUrl}/api/todos/${todo.id}`).end();
@@ -49,6 +56,18 @@ app.put("/api/todos/:id", (req, res) => {
 
   if (!todo) {
     res.status(404).end();
+    return;
+  }
+
+  const updatedTodo = {
+    title: req.body.title,
+    complete: req.body.complete,
+  };
+
+  const [valid, errors] = validateTodo(updatedTodo);
+
+  if (!valid) {
+    res.status(400).json({ message: "The request was not valid", errors });
     return;
   }
 
@@ -75,3 +94,20 @@ app.delete("/api/todos/:id", (req, res) => {
 app.listen(port, () => {
   console.log(`App is running at ${baseUrl}/`);
 });
+
+function validateTodo(todo) {
+  const errors = {};
+
+  if (typeof todo.title !== "string" || !todo.title.trim()) {
+    errors.title = "Please provide a valid title for the todo";
+  }
+
+  if (typeof todo.complete !== "boolean") {
+    errors.title =
+      "Please specify true if the todo is complete, otherwise false";
+  }
+
+  const valid = Object.keys(errors).length === 0;
+
+  return [valid, errors];
+}
