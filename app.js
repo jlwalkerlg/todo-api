@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 
 let nextId = 2;
@@ -13,6 +14,11 @@ const app = express();
 const port = 3000;
 const baseUrl = `http://localhost:${port}`;
 
+app.use(
+  cors({
+    origin: true,
+  })
+);
 app.use(express.json());
 
 app.use((err, req, res, next) => {
